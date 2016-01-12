@@ -69,6 +69,17 @@ UIViewAnimationOptions const SSWNavigationTransitionCurve = 7 << 16;
     // fix hidesBottomBarWhenPushed not animated properly
     UITabBarController *tabBarController = toViewController.tabBarController;
     UINavigationController *navController = toViewController.navigationController;
+
+    // Hack このコードがないと､ スワイプで戻ったときに Tabbar が消えてしまう
+    CGFloat navigationBarHeight = toViewController.navigationController.navigationBar.frame.size.height;
+    CGFloat statusBarHeight = [[UIApplication sharedApplication] statusBarFrame].size.height;
+    CGFloat barHeight = statusBarHeight + navigationBarHeight;
+    toViewController.view.frame = CGRectMake( toViewControllerXTranslation,
+                                         barHeight,
+                                         toViewController.view.bounds.size.width,
+                                         toViewController.view.bounds.size.height - barHeight);
+                                         // ここまで Hack
+
     UITabBar *tabBar = tabBarController.tabBar;
     BOOL shouldAddTabBarBackToTabBarController = NO;
 
@@ -77,11 +88,11 @@ UIViewAnimationOptions const SSWNavigationTransitionCurve = 7 << 16;
     BOOL isToViewControllerFirstInNavController = [navController.viewControllers firstObject] == toViewController;
     if (tabBar && (tabBarControllerContainsToViewController || (isToViewControllerFirstInNavController && tabBarControllerContainsNavController))) {
         [tabBar.layer removeAllAnimations];
-        
+
         CGRect tabBarRect = tabBar.frame;
         tabBarRect.origin.x = toViewController.view.bounds.origin.x;
         tabBar.frame = tabBarRect;
-        
+
         [toViewController.view addSubview:tabBar];
         shouldAddTabBarBackToTabBarController = YES;
     }
@@ -97,7 +108,7 @@ UIViewAnimationOptions const SSWNavigationTransitionCurve = 7 << 16;
     } completion:^(BOOL finished) {
         if (shouldAddTabBarBackToTabBarController) {
             [tabBarController.view addSubview:tabBar];
-            
+
             CGRect tabBarRect = tabBar.frame;
             tabBarRect.origin.x = tabBarController.view.bounds.origin.x;
             tabBar.frame = tabBarRect;
