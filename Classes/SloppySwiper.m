@@ -25,6 +25,7 @@
 {
     [_panRecognizer removeTarget:self action:@selector(pan:)];
     [_navigationController.view removeGestureRecognizer:_panRecognizer];
+    _navigationController.delegate = nil;
 }
 
 - (instancetype)initWithNavigationController:(UINavigationController *)navigationController
