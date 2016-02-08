@@ -15,6 +15,7 @@
 @property (strong, nonatomic) UIPercentDrivenInteractiveTransition *interactionController;
 /// A Boolean value that indicates whether the navigation controller is currently animating a push/pop operation.
 @property (nonatomic) BOOL duringAnimation;
+@property (nonatomic) UIView *targetView;
 @end
 
 @implementation SloppySwiper
@@ -24,7 +25,7 @@
 - (void)dealloc
 {
     [_panRecognizer removeTarget:self action:@selector(pan:)];
-    [_navigationController.view removeGestureRecognizer:_panRecognizer];
+    [_targetView removeGestureRecognizer:_panRecognizer];
     _navigationController.delegate = nil;
 }
 
@@ -59,6 +60,8 @@
     _panRecognizer = panRecognizer;
     
     _animator = [[SSWAnimator alloc] init];
+    
+    _targetView = aView;
 }
 
 #pragma mark - UIPanGestureRecognizer
